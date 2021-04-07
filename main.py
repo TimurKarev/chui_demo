@@ -48,16 +48,15 @@ class Window(QMainWindow):
         self.open_action.triggered.connect(self.open_file)
 
     def open_file(self):
-        # fname = QFileDialog.getOpenFileName(self, 'Open file',
-        #                                     str(Path.cwd()), "csv files (*.csv)")
-        # print(fname)
-        # if fname[0] != '':
-        #     self.centralWidget.setText(fname[0])
-        sub = QMdiSubWindow()
-        sub.setWidget(DataTableWindow())
-        sub.setWindowTitle("subwindow")
-        self.mdi.addSubWindow(sub)
-        sub.show()
+        fname = QFileDialog.getOpenFileName(self, 'Open file',
+                                            str(Path.cwd()), "csv files (*.csv)")
+
+        if fname[0] != '':
+            sub = QMdiSubWindow()
+            sub.setWidget(DataTableWindow(fname[0]))
+            sub.setWindowTitle("subwindow")
+            self.mdi.addSubWindow(sub)
+            sub.show()
 
 
 if __name__ == "__main__":
