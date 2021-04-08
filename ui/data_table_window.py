@@ -1,8 +1,18 @@
-import sys
 import pandas as pd
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QComboBox
+
+
+class ComboInOut(QComboBox):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.addItems(['Внутрення', 'Внешняя'])
+        self.currentIndexChanged.connect(self._get_combo_value)
+
+    def _get_combo_value(self):
+        return self.currentText()
 
 
 class TableModel(QtCore.QAbstractTableModel):
@@ -15,11 +25,10 @@ class TableModel(QtCore.QAbstractTableModel):
             value = self._data.iloc[index.row(), index.column()]
             return str(value)
 
-    # def setData(self, index, value, role):
-    #     if role == Qt.EditRole:
-    #         self._data[index.row()][index.column()] = value
-    #         print(self._data)
-    #         return True
+    def setData(self, index, value, role):
+        if role == Qt.EditRole:
+            self._data.iloc[index.row(), index.column()] = value
+            return True
 
     def rowCount(self, index):
         return self._data.shape[0]
@@ -27,8 +36,8 @@ class TableModel(QtCore.QAbstractTableModel):
     def columnCount(self, index):
         return self._data.shape[1]
 
-    # def flags(self, index):
-    #     return Qt.ItemIsSelectable|Qt.ItemIsEnabled|Qt.ItemIsEditable
+    def flags(self, index):
+        return Qt.ItemIsSelectable|Qt.ItemIsEnabled|Qt.ItemIsEditable
 
     def headerData(self, section, orientation, role):
         # section is the index of the column/row.
@@ -39,23 +48,17 @@ class TableModel(QtCore.QAbstractTableModel):
             if orientation == Qt.Vertical:
                 return str(self._data.index[section])
 
+
 class DataTableWindow(QtWidgets.QMainWindow):
     def __init__(self, fname):
         super().__init__()
 
         self.table = QtWidgets.QTableView()
 
-        # data = [
-        #   [4, 9, 2],
-        #   [1, 0, 0],
-        #   [3, 5, 0],
-        #   [3, 3, 2],
-        #   [7, 8, 9],
-        # ]
-
         data = pd.read_csv(fname)
 
         self.model = TableModel(data)
         self.table.setModel(self.model)
-
+        self.table.resizeColumnsToContents()
+        #self.table.setCellWidget(0, 1, ComboInOut(self))
         self.setCentralWidget(self.table)

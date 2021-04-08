@@ -15,7 +15,8 @@ class Window(QMainWindow):
         """Initializer."""
         super().__init__(parent)
         self.setWindowTitle("Python Menus & Toolbars")
-        self.resize(400, 200)
+        self.resize(1000, 500)
+
         self.mdi = QMdiArea()
         self.setCentralWidget(self.mdi)
 
@@ -56,6 +57,7 @@ class Window(QMainWindow):
             sub.setWidget(DataTableWindow(fname[0]))
             sub.setWindowTitle("subwindow")
             self.mdi.addSubWindow(sub)
+            sub.showMaximized()
             sub.show()
 
 
