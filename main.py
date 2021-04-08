@@ -53,12 +53,13 @@ class Window(QMainWindow):
                                             str(Path.cwd()), "csv files (*.csv)")
 
         if fname[0] != '':
-            sub = QMdiSubWindow()
-            sub.setWidget(DataTableWindow(fname[0]))
-            sub.setWindowTitle("subwindow")
-            self.mdi.addSubWindow(sub)
-            sub.showMaximized()
-            sub.show()
+            try:
+                sub = DataTableWindow(fname[0])
+                self.mdi.addSubWindow(sub)
+                sub.show()
+                sub.showMaximized()
+            except Exception as e:
+                print(e)
 
 
 if __name__ == "__main__":
