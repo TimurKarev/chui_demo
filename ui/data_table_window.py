@@ -25,51 +25,6 @@ class ComboInOut(QComboBox):
         return self.currentText()
 
 
-class Delegate(QtWidgets.QItemDelegate):
-    def __init__(self, owner):
-        super().__init__(owner)
-
-    def createEditor(self, parent, option, index):
-        editor = ComboInOut(parent)
-        #editor.currentItemChanged.connect(self.currentItemChanged)
-        editor.addItems(self.items)
-        return editor
-
-
-class TableModel(QtCore.QAbstractTableModel):
-    def __init__(self, data):
-        super(TableModel, self).__init__()
-        self._data = data
-
-    def data(self, index, role):
-        if role == Qt.DisplayRole:
-            value = self._data.iloc[index.row(), index.column()]
-            return str(value)
-
-    def setData(self, index, value, role):
-        if role == Qt.EditRole:
-            self._data.iloc[index.row(), index.column()] = value
-            return True
-
-    def rowCount(self, index):
-        return self._data.shape[0]
-
-    def columnCount(self, index):
-        return self._data.shape[1]
-
-    def flags(self, index):
-        return Qt.ItemIsSelectable|Qt.ItemIsEnabled|Qt.ItemIsEditable
-
-    def headerData(self, section, orientation, role):
-        # section is the index of the column/row.
-        if role == Qt.DisplayRole:
-            if orientation == Qt.Horizontal:
-                return str(self._data.columns[section])
-
-            if orientation == Qt.Vertical:
-                return str(self._data.index[section])
-
-
 class DataTableWindow(QtWidgets.QMdiSubWindow):
     def __init__(self, f_name):
         super().__init__()
@@ -88,22 +43,24 @@ class DataTableWindow(QtWidgets.QMdiSubWindow):
         self._df = pd.read_csv(f_name)
 
     def _create_table(self):
-        # Row count
         self._table_widget.setRowCount(self._df.shape[0])
-
-        # Column count
         self._table_widget.setColumnCount(self._df.shape[1])
 
+        self._table_widget.setHorizontalHeaderLabels(self._df.columns)
+
+        header = self._table_widget.horizontalHeader()
         for r, row in self._df.iterrows():
             for c, value in enumerate(row):
                 if c == 1:
                     self._table_widget.setCellWidget(r, c, ComboInOut(self, r, c, self._df.iloc[r, c]))
-                self._table_widget.setItem(r, c, QTableWidgetItem(value))
+                else:
+                    self._table_widget.setItem(r, c, QTableWidgetItem(value))
+                header.setSectionResizeMode(c, QHeaderView.ResizeToContents)
 
         # Table will fit the screen horizontally
-        self._table_widget.horizontalHeader().setStretchLastSection(True)
-        self._table_widget.horizontalHeader().setSectionResizeMode(
-            QHeaderView.Stretch)
+        #self._table_widget.horizontalHeader().setStretchLastSection(True)
+        # self._table_widget.horizontalHeader().setSectionResizeMode(
+        #     QHeaderView.Stretch)
 
     def _cell_changed(self, row, col):
         self._df.iloc[row, col] = self._table_widget.item(row, col).text()
