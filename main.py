@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QFileDialog, QMdiSubWindow, QTextEdit, \
     QMdiArea
 
+from services.parse_svg import SVGParser
 from ui.data_table_window import DataTableWindow
 
 
@@ -27,13 +28,18 @@ class Window(QMainWindow):
 
 
     def _create_actions(self):
-        self.open_action = QAction("&Open...", self)
+        self.open_action = QAction("&Открыть...", self)
+        self.save_action = QAction("&Сохранить", self)
+        self.export_action = QAction("&Экспорт из SVG", self)
 
     def _createMenuBar(self):
         menuBar = self.menuBar()
         self.setMenuBar(menuBar)
+
         fileMenu =menuBar.addMenu("&Файл")
         fileMenu.addAction(self.open_action)
+        fileMenu.addAction(self.save_action)
+        fileMenu.addAction(self.export_action)
 
     def _createToolBars(self):
         # Using a title
@@ -47,6 +53,8 @@ class Window(QMainWindow):
 
     def _connect_actions(self):
         self.open_action.triggered.connect(self.open_file)
+        self.save_action.triggered.connect(self.save_file)
+        self.export_action.triggered.connect(self.export_table)
 
     def open_file(self):
         fname = QFileDialog.getOpenFileName(self, 'Open file',
@@ -60,6 +68,24 @@ class Window(QMainWindow):
                 sub.showMaximized()
             except Exception as e:
                 print(e)
+
+    def save_file(self):
+        window = self.mdi.activeSubWindow()
+        if window != 0:
+            try:
+                window.save_model()
+            except Exception as e:
+                # TODO: create good exception
+                print('Can not save file')
+
+    def export_table(self):
+        fname = QFileDialog.getOpenFileName(self, 'Open file',
+                                            str(Path.cwd()), "svg files (*.svg)")
+        try:
+            l = SVGParser.parse_svg(fname[0])
+            print(l)
+        except Exception as e:
+            print(e)
 
 
 if __name__ == "__main__":
