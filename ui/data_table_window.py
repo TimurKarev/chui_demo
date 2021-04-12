@@ -4,6 +4,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QComboBox, QTableWidget, QTableWidgetItem, QHeaderView, QVBoxLayout
 
+from models.data_model import DataModel
+
 
 class ComboInOut(QComboBox):
     def __init__(self, parent, row, col, value):
@@ -25,23 +27,19 @@ class ComboInOut(QComboBox):
         return self.currentText()
 
 
-class DataTableWindow(QtWidgets.QMdiSubWindow):
-    def __init__(self, f_name):
+class DataTableWidget(QtWidgets.QWidget):
+    def __init__(self):
         super().__init__()
-        self._f_name = f_name
-        self._df = pd.DataFrame()
+        self._data_model = DataModel()
+        self._df = self._data_model.df()
         self._table_widget = QTableWidget()
 
         self._table_widget.cellChanged.connect(self._cell_changed)
 
-        self.setWindowTitle(f_name)
+        self.setWindowTitle(self._data_model.filename)
 
-        self._init_model(f_name)
         self._create_table()
         self.setWidget(self._table_widget)
-
-    def _init_model(self, f_name):
-        self._df = pd.read_csv(f_name)
 
     def save_model(self):
         self._df.to_csv(self._f_name, index=False, encoding='utf-8-sig')
@@ -60,11 +58,6 @@ class DataTableWindow(QtWidgets.QMdiSubWindow):
                 else:
                     self._table_widget.setItem(r, c, QTableWidgetItem(value))
                 header.setSectionResizeMode(c, QHeaderView.ResizeToContents)
-
-        # Table will fit the screen horizontally
-        #self._table_widget.horizontalHeader().setStretchLastSection(True)
-        # self._table_widget.horizontalHeader().setSectionResizeMode(
-        #     QHeaderView.Stretch)
 
     def _cell_changed(self, row, col):
         self._df.iloc[row, col] = self._table_widget.item(row, col).text()
