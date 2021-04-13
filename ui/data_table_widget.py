@@ -1,4 +1,7 @@
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, Qt
+
+from models.data_model import DataModel
+from ui.data_table_window import TableWidget
 
 
 class DataTableWidget(QtWidgets.QTabWidget):
@@ -11,8 +14,13 @@ class DataTableWidget(QtWidgets.QTabWidget):
         t1_header.setText('<h3>Таблица потерь - Проблеммы<h3>')
         layout.addWidget(t1_header)
 
-        layout.addWidget(DataTableWidget())
-        layout.addWidget(QtWidgets.QPushButton("Bottom"))
+        table = TableWidget()
+        table.setSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Expanding)
+        layout.addWidget(table)
 
-        layout.addStretch()
+        file_name_label = QtWidgets.QLabel()
+        file_name_label.setText(str(DataModel().filename))
+        layout.addWidget(file_name_label)
+
+        #layout.addStretch()
         self.setLayout(layout)
