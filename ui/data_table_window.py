@@ -16,7 +16,8 @@ class ComboInOut(QComboBox):
         self._parent = parent
 
         self._items = ['Внутренняя', 'Внешняя']
-        value = self._items[0] if value != ' ' else value
+        if value == '':
+            value = self._items[0]
 
         self.addItems(self._items)
         self.setCurrentIndex(self._items.index(value))
@@ -36,15 +37,18 @@ class TableWidget(QtWidgets.QTableWidget):
 
         self.cellChanged.connect(self._cell_changed)
 
-        self._create_table()
+        self.create_table()
 
     # def save_model(self):
     #     self._df.to_csv(self._f_name, index=False, encoding='utf-8-sig')
 
-    def _create_table(self):
+    def _generate_menu(self):
+        print('click')
+
+    def create_table(self):
         self.setRowCount(self._df.shape[0])#if self._df.shape[0] > 0 else 1)
         self.setColumnCount(self._df.shape[1])
-
+        print(f'create table {self._df.shape}')
         self.setHorizontalHeaderLabels(self._df.columns)
 
         header = self.horizontalHeader()

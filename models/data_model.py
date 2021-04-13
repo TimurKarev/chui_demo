@@ -42,6 +42,11 @@ class DataModel(object):
 
     def new_table(self):
         self.filename = Path().cwd() / 'новая таблица.csv'
-
         self._create_empty_data()
 
+    def add_empty_row(self):
+        try:
+            self.df = self.df.append(pd.DataFrame([['']*self.df.shape[1]], columns=self.headers))
+        except Exception as e:
+            print(e)
+        print(self.df.shape)
