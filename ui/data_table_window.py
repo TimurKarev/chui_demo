@@ -16,8 +16,9 @@ class ComboInOut(QComboBox):
         self._parent = parent
 
         self._items = ['Внутренняя', 'Внешняя']
-        if value == '':
+        if value == '' or value == ' ':
             value = self._items[0]
+            self._get_combo_value()
 
         self.addItems(self._items)
         self.setCurrentIndex(self._items.index(value))
@@ -46,9 +47,9 @@ class TableWidget(QtWidgets.QTableWidget):
         print('click')
 
     def create_table(self):
+        self._df = self._data_model.df
         self.setRowCount(self._df.shape[0])#if self._df.shape[0] > 0 else 1)
         self.setColumnCount(self._df.shape[1])
-        print(f'create table {self._df.shape}')
         self.setHorizontalHeaderLabels(self._df.columns)
 
         header = self.horizontalHeader()

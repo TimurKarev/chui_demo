@@ -82,8 +82,11 @@ class MainWindow(QMainWindow):
                 print('main window open file' + e)
 
     def save_file(self):
-        dm = DataModel()
-        dm.df.to_csv(dm.filename, index=False, encoding='utf-8-sig')
+        try:
+            dm = DataModel()
+            dm.df.to_csv(dm.filename, index=False, encoding='utf-8-sig')
+        except Exception as e:
+            print('main window save as' + e)
 
     def save_as_file(self):
         fname = QFileDialog.getSaveFileName(self, 'Сохранить как',

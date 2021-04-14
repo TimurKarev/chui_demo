@@ -46,7 +46,7 @@ class DataModel(object):
 
     def add_empty_row(self):
         try:
-            self.df = self.df.append(pd.DataFrame([['']*self.df.shape[1]], columns=self.headers))
+            self.df = self.df.append(pd.DataFrame([['']*self.df.shape[1]], columns=self.headers), ignore_index=True)
         except Exception as e:
             print(e)
         print(self.df.shape)
