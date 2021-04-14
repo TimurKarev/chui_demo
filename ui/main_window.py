@@ -13,6 +13,8 @@ from PyQt5.QtWidgets import QMainWindow, QToolBar, QAction, QFileDialog, \
 
 from PyQt5 import Qt
 
+from ui.graph_window import GraphWindow
+
 
 class MainWindow(QMainWindow):
     """Main MainWindow."""
@@ -46,6 +48,9 @@ class MainWindow(QMainWindow):
         fileMenu.addAction(self.close_table_action)
         fileMenu.addAction(self.exit_action)
 
+        graph_menu = menuBar.addMenu("График")
+        graph_menu.addAction(self.show_graph_action)
+
     def _create_actions(self):
         self.new_action = QAction("&Новая таблица", self)
         self.open_action = QAction("&Открыть...", self)
@@ -55,6 +60,8 @@ class MainWindow(QMainWindow):
         self.close_table_action = QAction('Закрыть таблицу', self)
         self.exit_action = QAction('Выйти', self)
 
+        self.show_graph_action = QAction('Нарисовать график', self)
+
     def _connect_actions(self):
         self.new_action.triggered.connect(self.new_table)
         self.open_action.triggered.connect(self.open_file)
@@ -63,6 +70,8 @@ class MainWindow(QMainWindow):
         self.save_as_action.triggered.connect(self.save_as_file)
         self.close_table_action.triggered.connect(self.close_table)
         self.exit_action.triggered.connect(self.exit)
+
+        self.show_graph_action.triggered.connect(self.show_graph)
 
     def new_table(self):
         try:
@@ -121,3 +130,6 @@ class MainWindow(QMainWindow):
 
     def exit(self):
         sys.exit(self._app.exec_())
+
+    def show_graph(self):
+        GraphWindow(self).show()
