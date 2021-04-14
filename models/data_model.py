@@ -23,6 +23,7 @@ class DataModel(object):
     def _create_empty_data(self):
         problems = []
         self.df = pd.DataFrame(problems, columns=self.headers)
+        self.add_empty_row()
 
     def load_from_csv(self, filename):
         self.filename = Path(filename)
@@ -49,4 +50,7 @@ class DataModel(object):
             self.df = self.df.append(pd.DataFrame([['']*self.df.shape[1]], columns=self.headers), ignore_index=True)
         except Exception as e:
             print(e)
-        print(self.df.shape)
+
+    def delete_row(self, row_num: int):
+        self.df.drop(labels=row_num, inplace=True)
+        self.df = self.df.reset_index(drop=True)

@@ -16,7 +16,7 @@ class DataTableWidget(QtWidgets.QTabWidget):
         t1_header.setText('<h3>Таблица потерь - Проблеммы<h3>')
         self._layout.addWidget(t1_header)
 
-        table = TableWidget()
+        table = TableWidget(self)
         table.setSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Expanding)
         self._layout.addWidget(table)
         self._table = table

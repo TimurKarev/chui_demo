@@ -1,8 +1,8 @@
 import pandas as pd
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QComboBox, QTableWidget, QTableWidgetItem, QHeaderView, QVBoxLayout
+from PyQt5.QtCore import  Qt
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QComboBox, QTableWidgetItem, QHeaderView
 
 from models.data_model import DataModel
 
@@ -31,25 +31,27 @@ class ComboInOut(QComboBox):
 
 
 class TableWidget(QtWidgets.QTableWidget):
-    def __init__(self):
+    def __init__(self, parent):
         super().__init__()
+        self._parent = parent
         self._data_model = DataModel()
         self._df = self._data_model.df
 
         self.cellChanged.connect(self._cell_changed)
 
         self.create_table()
-
-    # def save_model(self):
-    #     self._df.to_csv(self._f_name, index=False, encoding='utf-8-sig')
-
-    def _generate_menu(self):
-        print('click')
+        try:
+            self.setContextMenuPolicy(Qt.CustomContextMenu)
+            self.customContextMenuRequested.connect(self.generateMenu)
+        except Exception as e:
+            print(e)
 
     def create_table(self):
         self._df = self._data_model.df
-        self.setRowCount(self._df.shape[0])#if self._df.shape[0] > 0 else 1)
+
+        self.setRowCount(self._df.shape[0])
         self.setColumnCount(self._df.shape[1])
+
         self.setHorizontalHeaderLabels(self._df.columns)
 
         header = self.horizontalHeader()
@@ -60,6 +62,22 @@ class TableWidget(QtWidgets.QTableWidget):
                 else:
                     self.setItem(r, c, QTableWidgetItem(value))
                 header.setSectionResizeMode(c, QHeaderView.ResizeToContents)
+
+    # pos is the clicked position
+    def generateMenu(self):
+        row_num = -1
+        for i in self.selectionModel().selection().indexes():
+            row_num = i.row()
+            print(row_num)
+        if row_num != -1:
+            try:
+                dm = DataModel()
+                dm.delete_row(row_num)
+                self.create_table()
+                self.update()
+                print(dm.df.shape)
+            except Exception as e:
+                print(e)
 
     def _cell_changed(self, row, col):
         self._df.iloc[row, col] = self.item(row, col).text()
