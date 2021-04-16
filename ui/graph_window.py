@@ -52,17 +52,17 @@ class GraphWindow(QtWidgets.QMainWindow):
                            sizes=sizes)
             layout.addWidget(chart)
 
-            # header1 = QtWidgets.QLabel()
-            # header1.setAlignment(QtCore.Qt.AlignCenter)
-            # header1.setText('<h1>Структура  внутренних и внешних проблем<h1>')
-            # layout.addWidget(header1)
-            # df = DataModel().df.iloc[:, 2].value_counts()
-            # labels = df.index
-            # sizes = list(df)
-            # chart = Canvas(parent=parent,
-            #                labels=labels,
-            #                sizes=sizes)
-            # layout.addWidget(chart)
+            header1 = QtWidgets.QLabel()
+            header1.setAlignment(QtCore.Qt.AlignCenter)
+            header1.setText('<h1>Структура  внутренних и внешних проблем<h1>')
+            layout.addWidget(header1)
+            df = DataModel().df.iloc[:, 2].value_counts()
+            labels = df.index
+            sizes = list(df)
+            chart = Canvas(parent=parent,
+                           labels=labels,
+                           sizes=sizes)
+            layout.addWidget(chart)
 
             # header1 = QtWidgets.QLabel()
             # header1.setAlignment(QtCore.Qt.AlignCenter)
