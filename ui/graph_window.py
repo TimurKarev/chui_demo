@@ -9,52 +9,134 @@ from models.data_model import DataModel
 
 
 class Canvas(FigureCanvas):
-    def __init__(self, parent):
+    def __init__(self, parent=None, sizes=None, labels=None):
         fig, self._ax = plt.subplots(figsize=(3, 2), dpi=200)
         super().__init__(fig)
-        self.setParent(parent)
+        if parent:
+            self.setParent(parent)
 
-        df = DataModel().df.iloc[:, 1].value_counts()
+        if sizes:
+            size_len = len(sizes)
+            explode = [0] * size_len
+            if size_len > 2:
+                e = sizes.index(max(sizes))
+                explode[int(e)] = 0.1
 
-        labels = df.index
-        sizes = list(df)
-
-        size_len = len(sizes)
-        explode = [0] * size_len
-        if size_len > 2:
-            e = sizes.index(max(sizes))
-            explode[int(e)] = 0.05
-
-        self._ax.pie(sizes,
-                     labels=labels,
-                     explode=explode,
-                     autopct='%1.1f%%',
-                     radius=1,
-                     wedgeprops=dict(width=0.6,
-                                     edgecolor='w',
-                                     ),
-                     )
+            self._ax.pie(sizes,
+                         labels=labels,
+                         explode=explode,
+                         autopct='%1.1f%%',
+                         radius=1,
+                         wedgeprops=dict(width=0.9,
+                                         edgecolor='w',
+                                         ),
+                         )
 
 
 class GraphWindow(QtWidgets.QMainWindow):
     """Main MainWindow."""
     def __init__(self, parent):
         super().__init__(parent=parent)
+        self.data = DataModel().df
         try:
             layout = QtWidgets.QVBoxLayout()
 
             header1 = QtWidgets.QLabel()
             header1.setAlignment(QtCore.Qt.AlignCenter)
-            header1.setText('<h1>Внешняя Внутреняя<h1>')
+            header1.setText('<h1>Соотношение Внешних и Внутренних проблемм<h1>')
+            layout.addWidget(header1)
+            df = DataModel().df.iloc[:, 1].value_counts()
+            labels = df.index
+            sizes = list(df)
+            chart = Canvas(parent=parent,
+                           labels=labels,
+                           sizes=sizes)
+            layout.addWidget(chart)
+
+            header1 = QtWidgets.QLabel()
+            header1.setAlignment(QtCore.Qt.AlignCenter)
+            header1.setText('<h1>Структура  внутренних и внешних проблем<h1>')
+            layout.addWidget(header1)
+            df = DataModel().df.iloc[:, 2].value_counts()
+            labels = df.index
+            sizes = list(df)
+            chart = Canvas(parent=parent,
+                           labels=labels,
+                           sizes=sizes)
+            layout.addWidget(chart)
+
+            header1 = QtWidgets.QLabel()
+            header1.setAlignment(QtCore.Qt.AlignCenter)
+            header1.setText('<h1>Структура внешних проблем<h1>')
+            layout.addWidget(header1)
+            mask = self.data.iloc[:, 1] == 'Внешняя'
+            plot_df = self.data[mask]
+            df = plot_df.iloc[:, 2].value_counts()
+            labels = df.index
+            sizes = list(df)
+
+            chart = Canvas(parent=parent,
+                           labels=labels,
+                           sizes=sizes)
+            layout.addWidget(chart)
+
+            header1 = QtWidgets.QLabel()
+            header1.setAlignment(QtCore.Qt.AlignCenter)
+            header1.setText('<h1>Структура внутренних проблем<h1>')
+            layout.addWidget(header1)
+            mask = self.data.iloc[:, 1] == 'Внутренняя'
+            plot_df = self.data[mask]
+            df = plot_df.iloc[:, 2].value_counts()
+            labels = df.index
+            sizes = list(df)
+            chart = Canvas(parent=parent,
+                           labels=labels,
+                           sizes=sizes)
+            layout.addWidget(chart)
+            header1 = QtWidgets.QLabel()
+            header1.setAlignment(QtCore.Qt.AlignCenter)
+            header1.setText('<h1>Структура бизнесс процессов<h1>')
             layout.addWidget(header1)
 
-            chart = Canvas(self)
+            df = plot_df.iloc[:, 3].value_counts()
+            labels = df.index
+            sizes = list(df)
+
+            chart = Canvas(parent=parent,
+                           labels=labels,
+                           sizes=sizes)
+            layout.addWidget(chart)
+            header1 = QtWidgets.QLabel()
+            header1.setAlignment(QtCore.Qt.AlignCenter)
+            header1.setText('<h1>Структура типов бизнесс процессов<h1>')
+            layout.addWidget(header1)
+            df = plot_df.iloc[:, 4].value_counts()
+            labels = df.index
+            sizes = list(df)
+
+            chart = Canvas(parent=parent,
+                           labels=labels,
+                           sizes=sizes)
+            layout.addWidget(chart)
+
+            header1 = QtWidgets.QLabel()
+            header1.setAlignment(QtCore.Qt.AlignCenter)
+            header1.setText('<h1>Распределение задач по ЗГД<h1>')
+            layout.addWidget(header1)
+            df = plot_df.iloc[:, 5].value_counts()
+            labels = df.index
+            sizes = list(df)
+            chart = Canvas(parent=parent,
+                           labels=labels,
+                           sizes=sizes)
             layout.addWidget(chart)
 
             layout.addStretch()
 
             widget = QtWidgets.QWidget()
             widget.setLayout(layout)
-            self.setCentralWidget(widget)
+            scroll = QtWidgets.QScrollArea()
+            scroll.setWidget(widget)
+            self.setCentralWidget(scroll)
         except Exception as e:
             print(e)
