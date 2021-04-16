@@ -40,7 +40,7 @@ class MainWindow(QMainWindow):
         fileMenu.addAction(self.new_action)
         fileMenu.addAction(self.open_action)
         fileMenu.addSeparator()
-        fileMenu.addAction(self.export_action)
+        fileMenu.addAction(self.import_action)
         fileMenu.addSeparator()
         fileMenu.addAction(self.save_action)
         fileMenu.addAction(self.save_as_action)
@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
     def _create_actions(self):
         self.new_action = QAction("&Новая таблица", self)
         self.open_action = QAction("&Открыть...", self)
-        self.export_action = QAction("&Экспорт из svg", self)
+        self.import_action = QAction("&Импорт из svg", self)
         self.save_action = QAction("&Сохранить", self)
         self.save_as_action = QAction('Сохранить как...', self)
         self.close_table_action = QAction('Закрыть таблицу', self)
@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
     def _connect_actions(self):
         self.new_action.triggered.connect(self.new_table)
         self.open_action.triggered.connect(self.open_file)
-        self.export_action.triggered.connect(self.export_table)
+        self.import_action.triggered.connect(self.import_table)
         self.save_action.triggered.connect(self.save_file)
         self.save_as_action.triggered.connect(self.save_as_file)
         self.close_table_action.triggered.connect(self.close_table)
@@ -108,10 +108,11 @@ class MainWindow(QMainWindow):
                 dm = DataModel()
                 dm.filename = fname[0]
                 dm.df.to_csv(dm.filename, index=False, encoding='utf-8-sig')
+                dm.filename = fname
             except Exception as e:
                 print('main window save as' + e)
 
-    def export_table(self):
+    def import_table(self):
         fname = QFileDialog.getOpenFileName(self, 'Open file',
                                             str(Path.cwd()), "svg files (*.svg)")
         try:

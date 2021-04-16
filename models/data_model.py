@@ -48,6 +48,7 @@ class DataModel(object):
     def add_empty_row(self):
         try:
             self.df = self.df.append(pd.DataFrame([['']*self.df.shape[1]], columns=self.headers), ignore_index=True)
+            self.df.iloc[self.df.shape[0]-1, 1] = 'Внутренняя'
         except Exception as e:
             print(e)
 
