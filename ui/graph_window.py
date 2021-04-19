@@ -2,13 +2,43 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 from PyQt5 import QtWidgets, Qt, QtCore
-
+import pandas as pd
 from models.data_model import DataModel
+from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.backends.backend_pdf
+
+class Table(FigureCanvas):
+    def __init__(self):
+        d = DataModel().df
+
+        table = pd.DataFrame(d)
+        self.fig, ax = plt.subplots(figsize=(10, 5), dpi=200)
+        super().__init__(self.fig)
+
+        cell_text = []
+        for row in range(len(table)):
+            cell_text.append(table.iloc[row])
+
+        col_width = [.5, 0.1, 0.1, 0.1, 0.1, 0.1]
+        ax_table = ax.table(
+            colWidths=col_width,
+            cellText=cell_text,
+            colLabels=table.columns,
+            loc='center'
+        )
+        ax_table.auto_set_font_size(False)
+        ax_table.set_fontsize(4)
+        ax.axis('off')
+
+        # pdf = matplotlib.backends.backend_pdf.PdfPages("output.pdf")
+        # pdf.savefig(fig)
+        # pdf.close()
 
 
 class Canvas(FigureCanvas):
     def __init__(self, parent=None, sizes=None, labels=None):
         fig, self._ax = plt.subplots(figsize=(6, 2), dpi=200)
+        self.fig = fig
         font = {'size': 6}
 
         plt.rc('font', **font)
@@ -41,6 +71,11 @@ class GraphWindow(QtWidgets.QMainWindow):
         self.data = DataModel().df
         try:
             layout = QtWidgets.QVBoxLayout()
+            pdf = PdfPages('1.pdf')
+
+            table = Table()
+            pdf.savefig(table.fig)
+            layout.addWidget(table)
 
             header1 = QtWidgets.QLabel()
             header1.setAlignment(QtCore.Qt.AlignCenter)
@@ -49,11 +84,11 @@ class GraphWindow(QtWidgets.QMainWindow):
             df = DataModel().df.iloc[:, 1].value_counts()
             labels = df.index
             sizes = list(df)
-            print(f'sizes {sizes} \n labels {labels}')
             chart = Canvas(parent=parent,
                            labels=labels,
                            sizes=sizes)
             layout.addWidget(chart)
+            pdf.savefig(chart.fig)
 
             header1 = QtWidgets.QLabel()
             header1.setAlignment(QtCore.Qt.AlignCenter)
@@ -66,6 +101,7 @@ class GraphWindow(QtWidgets.QMainWindow):
                            labels=labels,
                            sizes=sizes)
             layout.addWidget(chart)
+            pdf.savefig(chart.fig)
 
             header1 = QtWidgets.QLabel()
             header1.setAlignment(QtCore.Qt.AlignCenter)
@@ -76,11 +112,11 @@ class GraphWindow(QtWidgets.QMainWindow):
             df = plot_df.iloc[:, 2].value_counts()
             labels = df.index
             sizes = list(df)
-
             chart = Canvas(parent=parent,
                            labels=labels,
                            sizes=sizes)
             layout.addWidget(chart)
+            pdf.savefig(chart.fig)
 
             header1 = QtWidgets.QLabel()
             header1.setAlignment(QtCore.Qt.AlignCenter)
@@ -95,6 +131,7 @@ class GraphWindow(QtWidgets.QMainWindow):
                            labels=labels,
                            sizes=sizes)
             layout.addWidget(chart)
+            pdf.savefig(chart.fig)
 
             header1 = QtWidgets.QLabel()
             header1.setAlignment(QtCore.Qt.AlignCenter)
@@ -103,11 +140,11 @@ class GraphWindow(QtWidgets.QMainWindow):
             df = self.data.iloc[:, 3].value_counts()
             labels = df.index
             sizes = list(df)
-
             chart = Canvas(parent=parent,
                            labels=labels,
                            sizes=sizes)
             layout.addWidget(chart)
+            pdf.savefig(chart.fig)
 
             header1 = QtWidgets.QLabel()
             header1.setAlignment(QtCore.Qt.AlignCenter)
@@ -120,6 +157,7 @@ class GraphWindow(QtWidgets.QMainWindow):
                            labels=labels,
                            sizes=sizes)
             layout.addWidget(chart)
+            pdf.savefig(chart.fig)
 
             header1 = QtWidgets.QLabel()
             header1.setAlignment(QtCore.Qt.AlignCenter)
@@ -132,6 +170,9 @@ class GraphWindow(QtWidgets.QMainWindow):
                            labels=labels,
                            sizes=sizes)
             layout.addWidget(chart)
+            pdf.savefig(chart.fig)
+
+            pdf.close()
 
             layout.addStretch()
 
@@ -143,3 +184,4 @@ class GraphWindow(QtWidgets.QMainWindow):
             self.setCentralWidget(scroll)
         except Exception as e:
             print(e)
+

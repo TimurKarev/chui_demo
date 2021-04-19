@@ -3,17 +3,13 @@ import sys
 from pathlib import Path
 
 from models.data_model import DataModel
-from services.parse_svg import SVGParser
 from ui.data_table_widget import DataTableWidget
-from ui.data_table_window import TableWidget
 from PyQt5 import QtCore
 
 from PyQt5.QtWidgets import QMainWindow, QToolBar, QAction, QFileDialog, \
     QMdiArea, QLabel
-
-from PyQt5 import Qt
-
 from ui.graph_window import GraphWindow
+import pdfkit
 
 
 class MainWindow(QMainWindow):
@@ -41,6 +37,7 @@ class MainWindow(QMainWindow):
         fileMenu.addAction(self.open_action)
         fileMenu.addSeparator()
         fileMenu.addAction(self.import_action)
+        fileMenu.addAction(self.export_action)
         fileMenu.addSeparator()
         fileMenu.addAction(self.save_action)
         fileMenu.addAction(self.save_as_action)
@@ -55,6 +52,7 @@ class MainWindow(QMainWindow):
         self.new_action = QAction("&Новая таблица", self)
         self.open_action = QAction("&Открыть...", self)
         self.import_action = QAction("&Импорт из svg", self)
+        self.export_action = QAction("&Экспорт в pdf", self)
         self.save_action = QAction("&Сохранить", self)
         self.save_as_action = QAction('Сохранить как...', self)
         self.close_table_action = QAction('Закрыть таблицу', self)
@@ -66,6 +64,7 @@ class MainWindow(QMainWindow):
         self.new_action.triggered.connect(self.new_table)
         self.open_action.triggered.connect(self.open_file)
         self.import_action.triggered.connect(self.import_table)
+        self.export_action.triggered.connect(self.export_to_pdf)
         self.save_action.triggered.connect(self.save_file)
         self.save_as_action.triggered.connect(self.save_as_file)
         self.close_table_action.triggered.connect(self.close_table)
@@ -122,6 +121,15 @@ class MainWindow(QMainWindow):
             self.setCentralWidget(window)
         except Exception as e:
             print(e)
+
+    def export_to_pdf(self):
+        # dm = DataModel()
+        # html_content = dm.get_html_from_df()
+        # try:
+        #     pdfkit.from_string(html_content, 'out.pdf')
+        # except Exception as e:
+        #     print(e)
+        pass
 
     def close_table(self):
         empty_label = QLabel()

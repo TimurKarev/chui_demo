@@ -55,3 +55,6 @@ class DataModel(object):
     def delete_row(self, row_num: int):
         self.df.drop(labels=row_num, inplace=True)
         self.df = self.df.reset_index(drop=True)
+
+    def get_html_from_df(self):
+        return self.df.to_html()

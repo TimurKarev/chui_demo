@@ -18,7 +18,7 @@ class DataTableWidget(QtWidgets.QTabWidget):
 
         table = TableWidget(self)
         #table.setSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Expanding)
-        #table.size
+#table.size
         self._layout.addWidget(table)
         self._table = table
 
