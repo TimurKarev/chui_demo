@@ -17,7 +17,8 @@ class DataTableWidget(QtWidgets.QTabWidget):
         self._layout.addWidget(t1_header)
 
         table = TableWidget(self)
-        table.setSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Expanding)
+        #table.setSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Expanding)
+        #table.size
         self._layout.addWidget(table)
         self._table = table
 
@@ -25,7 +26,7 @@ class DataTableWidget(QtWidgets.QTabWidget):
         add_button.clicked.connect(self._add_button_clicked)
         self._layout.addWidget(add_button)
 
-        self._layout.addStretch()
+        #self._layout.addStretch()
 
         file_name_label = QtWidgets.QLabel()
         file_name_label.setText(str(DataModel().filename))
