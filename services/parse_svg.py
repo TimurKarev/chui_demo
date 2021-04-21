@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 
 
-class SVGParser:
+class OldSVGParser:
 
     @staticmethod
     def parse_svg(file_name):

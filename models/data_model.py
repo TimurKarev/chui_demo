@@ -1,12 +1,12 @@
 import pandas as pd
 from pathlib import Path
 
-
-from services.parse_svg import SVGParser
+from services.svg_parser import SVGParser
 
 
 class DataModel(object):
     headers = [
+        "индекс",
         "Первичная формулировка",
         "Внешняя / Внутренняя",
         "Классификация проблеммы",
@@ -32,14 +32,22 @@ class DataModel(object):
         self.df = self.df.fillna(' ')
 
     def load_from_svg(self, filename):
+        # self.filename = Path(filename[:-3] + 'csv')
+        #
+        # problems = OldSVGParser.parse_svg(filename)
+        # column_num = len(self.headers)
+        # df = pd.DataFrame(problems, columns=[self.headers[0]])
+        # for i in range(1, column_num):
+        #     df.insert(len(df.columns), self.headers[i], value='')
+        # self.df = df
         self.filename = Path(filename[:-3] + 'csv')
-
-        problems = SVGParser.parse_svg(filename)
+        result = SVGParser(filename).result
         column_num = len(self.headers)
-        df = pd.DataFrame(problems, columns=[self.headers[0]])
-        for i in range(1, column_num):
+        df = pd.DataFrame(result, columns=[self.headers[0], self.headers[1]])
+        for i in range(2, column_num):
             df.insert(len(df.columns), self.headers[i], value='')
         self.df = df
+
 
     def new_table(self):
         self.filename = Path().cwd() / 'новая таблица.csv'
@@ -48,7 +56,7 @@ class DataModel(object):
     def add_empty_row(self):
         try:
             self.df = self.df.append(pd.DataFrame([['']*self.df.shape[1]], columns=self.headers), ignore_index=True)
-            self.df.iloc[self.df.shape[0]-1, 1] = 'Внутренняя'
+            self.df.iloc[self.df.shape[0]-1, 2] = 'Внутренняя'
         except Exception as e:
             print(e)
 

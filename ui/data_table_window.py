@@ -16,7 +16,7 @@ class ComboInOut(QComboBox):
         self._items = ['Внутренняя', 'Внешняя']
         if value == '' or value == ' ':
             value = self._items[0]
-            self._get_combo_value()
+            parent.combo_changed(row, col, value)
 
         self.addItems(self._items)
         self.setCurrentIndex(self._items.index(value))
@@ -55,10 +55,10 @@ class TableWidget(QtWidgets.QTableWidget):
         header = self.horizontalHeader()
         for r, row in self._df.iterrows():
             for c, value in enumerate(row):
-                if c == 1:
+                if c == 2:
                     self.setCellWidget(r, c, ComboInOut(self, r, c, self._df.iloc[r, c]))
                 else:
-                    self.setItem(r, c, QTableWidgetItem(value))
+                    self.setItem(r, c, QTableWidgetItem(str(value)))
                 header.setSectionResizeMode(c, QHeaderView.ResizeToContents)
 
     # pos is the clicked position
@@ -76,7 +76,8 @@ class TableWidget(QtWidgets.QTableWidget):
                 print(e)
 
     def _cell_changed(self, row, col):
-        self._df.iloc[row, col] = self.item(row, col).text()
+        value = self.item(row, col).text().strip()
+        self._df.iloc[row, col] = value
 
     def combo_changed(self, row, col, value):
         self._df.iloc[row, col] = value

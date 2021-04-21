@@ -120,7 +120,7 @@ class MainWindow(QMainWindow):
             window = DataTableWidget()
             self.setCentralWidget(window)
         except Exception as e:
-            print(e)
+            print(f'main window - import table: {e}')
 
     def export_to_pdf(self):
         # dm = DataModel()

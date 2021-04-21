@@ -7,11 +7,11 @@ from models.data_model import DataModel
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.backends.backend_pdf
 
+
 class Table(FigureCanvas):
     def __init__(self):
-        d = DataModel().df
+        table = DataModel().df
 
-        table = pd.DataFrame(d)
         self.fig, ax = plt.subplots(figsize=(10, 5), dpi=200)
         super().__init__(self.fig)
 
@@ -19,7 +19,7 @@ class Table(FigureCanvas):
         for row in range(len(table)):
             cell_text.append(table.iloc[row])
 
-        col_width = [.5, 0.1, 0.1, 0.1, 0.1, 0.1]
+        col_width = [0.03, .67, 0.1, 0.1, 0.1, 0.1, 0.1]
         ax_table = ax.table(
             colWidths=col_width,
             cellText=cell_text,
@@ -36,7 +36,7 @@ class Table(FigureCanvas):
 
 
 class Canvas(FigureCanvas):
-    def __init__(self, parent=None, sizes=None, labels=None):
+    def __init__(self, parent=None, sizes=None, labels=None, title=' '):
         fig, self._ax = plt.subplots(figsize=(6, 2), dpi=200)
         self.fig = fig
         font = {'size': 6}
@@ -62,113 +62,130 @@ class Canvas(FigureCanvas):
                                          edgecolor='w',
                                          ),
                          )
+            self._ax.set_title(title)
 
 
 class GraphWindow(QtWidgets.QMainWindow):
     """Main MainWindow."""
     def __init__(self, parent):
         super().__init__(parent=parent)
-        self.data = DataModel().df
+        dm = DataModel()
+        self.data = dm.df
+        file_name = str(dm.filename)[:-3] + 'pdf'
         try:
             layout = QtWidgets.QVBoxLayout()
-            pdf = PdfPages('1.pdf')
+            pdf = PdfPages(file_name)
 
             table = Table()
             pdf.savefig(table.fig)
             layout.addWidget(table)
 
-            header1 = QtWidgets.QLabel()
-            header1.setAlignment(QtCore.Qt.AlignCenter)
-            header1.setText('<h1>Соотношение Внешних и Внутренних проблемм<h1>')
-            layout.addWidget(header1)
-            df = DataModel().df.iloc[:, 1].value_counts()
-            labels = df.index
-            sizes = list(df)
-            chart = Canvas(parent=parent,
-                           labels=labels,
-                           sizes=sizes)
-            layout.addWidget(chart)
-            pdf.savefig(chart.fig)
-
-            header1 = QtWidgets.QLabel()
-            header1.setAlignment(QtCore.Qt.AlignCenter)
-            header1.setText('<h1>Структура  внутренних и внешних проблем<h1>')
-            layout.addWidget(header1)
+            # header1 = QtWidgets.QLabel()
+            # header1.setAlignment(QtCore.Qt.AlignCenter)
+            # header1.setText('<h1>Соотношение Внешних и Внутренних проблемм<h1>')
+            # layout.addWidget(header1)
             df = DataModel().df.iloc[:, 2].value_counts()
             labels = df.index
             sizes = list(df)
             chart = Canvas(parent=parent,
                            labels=labels,
-                           sizes=sizes)
+                           sizes=sizes,
+                           title='Соотношение Внешних и Внутренних проблемм'
+                           )
             layout.addWidget(chart)
             pdf.savefig(chart.fig)
 
-            header1 = QtWidgets.QLabel()
-            header1.setAlignment(QtCore.Qt.AlignCenter)
-            header1.setText('<h1>Структура внешних проблем<h1>')
-            layout.addWidget(header1)
-            mask = self.data.iloc[:, 1] == 'Внешняя'
+            # header1 = QtWidgets.QLabel()
+            # header1.setAlignment(QtCore.Qt.AlignCenter)
+            # header1.setText('<h1>Структура  внутренних и внешних проблем<h1>')
+            # layout.addWidget(header1)
+            df = DataModel().df.iloc[:, 3].value_counts()
+            labels = df.index
+            sizes = list(df)
+            chart = Canvas(parent=parent,
+                           labels=labels,
+                           sizes=sizes,
+                           title='Структура  внутренних и внешних проблем'
+                           )
+            layout.addWidget(chart)
+            pdf.savefig(chart.fig)
+
+            # header1 = QtWidgets.QLabel()
+            # header1.setAlignment(QtCore.Qt.AlignCenter)
+            # header1.setText('<h1>Структура внешних проблем<h1>')
+            # layout.addWidget(header1)
+            mask = self.data.iloc[:, 2] == 'Внешняя'
             plot_df = self.data[mask]
-            df = plot_df.iloc[:, 2].value_counts()
+            df = plot_df.iloc[:, 3].value_counts()
             labels = df.index
             sizes = list(df)
             chart = Canvas(parent=parent,
                            labels=labels,
-                           sizes=sizes)
+                           sizes=sizes,
+                           title='Структура внешних проблем'
+                           )
             layout.addWidget(chart)
             pdf.savefig(chart.fig)
 
-            header1 = QtWidgets.QLabel()
-            header1.setAlignment(QtCore.Qt.AlignCenter)
-            header1.setText('<h1>Структура внутренних проблем<h1>')
-            layout.addWidget(header1)
-            mask = self.data.iloc[:, 1] == 'Внутренняя'
+            # header1 = QtWidgets.QLabel()
+            # header1.setAlignment(QtCore.Qt.AlignCenter)
+            # header1.setText('<h1>Структура внутренних проблем<h1>')
+            # layout.addWidget(header1)
+            mask = self.data.iloc[:, 2] == 'Внутренняя'
             plot_df = self.data[mask]
-            df = plot_df.iloc[:, 2].value_counts()
+            df = plot_df.iloc[:, 3].value_counts()
             labels = df.index
             sizes = list(df)
             chart = Canvas(parent=parent,
                            labels=labels,
-                           sizes=sizes)
+                           sizes=sizes,
+                           title='Структура внутренних проблем'
+                           )
             layout.addWidget(chart)
             pdf.savefig(chart.fig)
 
-            header1 = QtWidgets.QLabel()
-            header1.setAlignment(QtCore.Qt.AlignCenter)
-            header1.setText('<h1>Структура бизнесс процессов<h1>')
-            layout.addWidget(header1)
-            df = self.data.iloc[:, 3].value_counts()
-            labels = df.index
-            sizes = list(df)
-            chart = Canvas(parent=parent,
-                           labels=labels,
-                           sizes=sizes)
-            layout.addWidget(chart)
-            pdf.savefig(chart.fig)
-
-            header1 = QtWidgets.QLabel()
-            header1.setAlignment(QtCore.Qt.AlignCenter)
-            header1.setText('<h1>Структура типов бизнесс процессов<h1>')
-            layout.addWidget(header1)
+            # header1 = QtWidgets.QLabel()
+            # header1.setAlignment(QtCore.Qt.AlignCenter)
+            # header1.setText('<h1>Структура бизнесс процессов<h1>')
+            # layout.addWidget(header1)
             df = self.data.iloc[:, 4].value_counts()
             labels = df.index
             sizes = list(df)
             chart = Canvas(parent=parent,
                            labels=labels,
-                           sizes=sizes)
+                           sizes=sizes,
+                           title='Структура бизнесс процессов'
+                           )
             layout.addWidget(chart)
             pdf.savefig(chart.fig)
 
-            header1 = QtWidgets.QLabel()
-            header1.setAlignment(QtCore.Qt.AlignCenter)
-            header1.setText('<h1>Распределение задач по ЗГД<h1>')
-            layout.addWidget(header1)
+            # header1 = QtWidgets.QLabel()
+            # header1.setAlignment(QtCore.Qt.AlignCenter)
+            # header1.setText('<h1>Структура типов бизнесс процессов<h1>')
+            # layout.addWidget(header1)
             df = self.data.iloc[:, 5].value_counts()
             labels = df.index
             sizes = list(df)
             chart = Canvas(parent=parent,
                            labels=labels,
-                           sizes=sizes)
+                           sizes=sizes,
+                           title='Структура типов бизнесс процессов'
+                           )
+            layout.addWidget(chart)
+            pdf.savefig(chart.fig)
+
+            # header1 = QtWidgets.QLabel()
+            # header1.setAlignment(QtCore.Qt.AlignCenter)
+            # header1.setText('<h1>Распределение задач по ЗГД<h1>')
+            # layout.addWidget(header1)
+            df = self.data.iloc[:, 6].value_counts()
+            labels = df.index
+            sizes = list(df)
+            chart = Canvas(parent=parent,
+                           labels=labels,
+                           sizes=sizes,
+                           title='Структура типов бизнесс процессов'
+                           )
             layout.addWidget(chart)
             pdf.savefig(chart.fig)
 
@@ -183,5 +200,5 @@ class GraphWindow(QtWidgets.QMainWindow):
             scroll.setWidget(widget)
             self.setCentralWidget(scroll)
         except Exception as e:
-            print(e)
+            print(f'graph window __init__ {e}')
 
