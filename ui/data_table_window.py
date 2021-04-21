@@ -1,6 +1,4 @@
-import pandas as pd
-
-from PyQt5.QtCore import  Qt
+from PyQt5.QtCore import Qt
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QComboBox, QTableWidgetItem, QHeaderView
 
@@ -68,14 +66,12 @@ class TableWidget(QtWidgets.QTableWidget):
         row_num = -1
         for i in self.selectionModel().selection().indexes():
             row_num = i.row()
-            print(row_num)
         if row_num != -1:
             try:
                 dm = DataModel()
                 dm.delete_row(row_num)
                 self.create_table()
                 self.update()
-                print(dm.df.shape)
             except Exception as e:
                 print(e)
 
