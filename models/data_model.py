@@ -32,20 +32,15 @@ class DataModel(object):
         self.df = self.df.fillna(' ')
 
     def load_from_svg(self, filename):
-        # self.filename = Path(filename[:-3] + 'csv')
-        #
-        # problems = OldSVGParser.parse_svg(filename)
-        # column_num = len(self.headers)
-        # df = pd.DataFrame(problems, columns=[self.headers[0]])
-        # for i in range(1, column_num):
-        #     df.insert(len(df.columns), self.headers[i], value='')
-        # self.df = df
         self.filename = Path(filename[:-3] + 'csv')
         result = SVGParser(filename).result
         column_num = len(self.headers)
         df = pd.DataFrame(result, columns=[self.headers[0], self.headers[1]])
         for i in range(2, column_num):
             df.insert(len(df.columns), self.headers[i], value='')
+
+        df[[self.headers[0]]] = df[[self.headers[0]]].apply(pd.to_numeric)
+        df = df.sort_values(self.headers[0])
         self.df = df
 
 

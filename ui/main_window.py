@@ -123,12 +123,6 @@ class MainWindow(QMainWindow):
             print(f'main window - import table: {e}')
 
     def export_to_pdf(self):
-        # dm = DataModel()
-        # html_content = dm.get_html_from_df()
-        # try:
-        #     pdfkit.from_string(html_content, 'out.pdf')
-        # except Exception as e:
-        #     print(e)
         pass
 
     def close_table(self):

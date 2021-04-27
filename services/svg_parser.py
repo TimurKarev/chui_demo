@@ -20,9 +20,9 @@ class SVGParser:
         pattern = []
         for g in foregroundPage:
             for t in g:
-                if self.get_clear_tag(t.tag) == 'userDefs':
+                if self.get_clear_tag(t.tag) == 'custProps':
                     for u in t:
-                        if self.get_clear_tag(u.tag) == 'ud':
+                        if self.get_clear_tag(u.tag) == 'cp':
                             for k, v in u.attrib.items():
                                 if v.lower().find(self.problem_tag.lower()) > -1:
                                     pattern.append(g)
