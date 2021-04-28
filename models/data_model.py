@@ -10,8 +10,8 @@ class DataModel(object):
         "Первичная формулировка",
         "Внешняя / Внутренняя",
         "Классификация проблеммы",
-        "Бизнесс процесс",
-        "Вид биснесс процесса",
+        "Бизнес процесс",
+        "Вид биснес процесса",
         "З.Г.Д."
     ]
 
@@ -27,9 +27,12 @@ class DataModel(object):
 
     def load_from_csv(self, filename):
         self.filename = Path(filename)
-
-        self.df = pd.read_csv(self.filename)
+        try:
+            self.df = pd.read_csv(self.filename)
+        except Exception as e:
+            print(f'open csv {e}')
         self.df = self.df.fillna(' ')
+        self.sort_by_index()
 
     def load_from_svg(self, filename):
         self.filename = Path(filename[:-3] + 'csv')
@@ -39,9 +42,10 @@ class DataModel(object):
         for i in range(2, column_num):
             df.insert(len(df.columns), self.headers[i], value='')
 
-        df[[self.headers[0]]] = df[[self.headers[0]]].apply(pd.to_numeric)
-        df = df.sort_values(self.headers[0])
-        self.df = df
+        # df[[self.headers[0]]] = df[[self.headers[0]]].apply(pd.to_numeric)
+        # df = df.sort_values(self.headers[0])
+        # self.df = df
+        self.sort_by_index()
 
 
     def new_table(self):
@@ -61,3 +65,9 @@ class DataModel(object):
 
     def get_html_from_df(self):
         return self.df.to_html()
+
+    def sort_by_index(self):
+        df = self.df
+        df[[self.headers[0]]] = df[[self.headers[0]]].apply(pd.to_numeric)
+        df = df.sort_values(self.headers[0])
+        self.df = df
