@@ -9,11 +9,11 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QToolBar, QAction, QFileDialog, \
     QMdiArea, QLabel
 from ui.graph_window import GraphWindow
-import pdfkit
 
 
 class MainWindow(QMainWindow):
     """Main MainWindow."""
+
     def __init__(self, app):
         """Initializer."""
         super().__init__(None)
@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         menuBar = self.menuBar()
         self.setMenuBar(menuBar)
 
-        fileMenu =menuBar.addMenu("&Файл")
+        fileMenu = menuBar.addMenu("&Файл")
         fileMenu.addAction(self.new_action)
         fileMenu.addAction(self.open_action)
         fileMenu.addSeparator()
@@ -60,6 +60,8 @@ class MainWindow(QMainWindow):
 
         self.show_graph_action = QAction('Нарисовать график', self)
 
+        self.sort_table_action = QAction('Отсортировать по индексам', self)
+
     def _connect_actions(self):
         self.new_action.triggered.connect(self.new_table)
         self.open_action.triggered.connect(self.open_file)
@@ -71,6 +73,8 @@ class MainWindow(QMainWindow):
         self.exit_action.triggered.connect(self.exit)
 
         self.show_graph_action.triggered.connect(self.show_graph)
+
+        self.sort_table_action.triggered.connect(self._sort_table)
 
     def new_table(self):
         try:
@@ -136,3 +140,9 @@ class MainWindow(QMainWindow):
 
     def show_graph(self):
         GraphWindow(self).show()
+
+    def _sort_table(self):
+        try:
+            DataModel().sort_by_index()
+        except:
+            pass

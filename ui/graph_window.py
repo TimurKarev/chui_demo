@@ -70,7 +70,9 @@ class MultiPieCanvas(FigureCanvas):
 
     def __init__(self, parent=None, data=None, title=' '):
         x = self.x_count * self.x_figsize_mult
-        y_count = len(data) // self.x_count + 1
+        y_count = len(data) // self.x_count# + 1
+        if y_count * self.x_count < len(data):
+            y_count += 1
         y = y_count * self.y_figsize_mult
         fig = plt.figure(figsize=(x, y), dpi=200, constrained_layout=True)
         font = {'size': 6}
@@ -82,7 +84,7 @@ class MultiPieCanvas(FigureCanvas):
             self.setParent(parent)
 
         for i, value in enumerate(data):
-            ax = fig.add_subplot(y_count, self.x_count, i + 1)
+            ax = fig.add_subplot(y_count, self.x_count, i+1)
             sizes = value['sizes']
             labels = value['labels']
             ax_title = value['title']
@@ -113,18 +115,15 @@ class GraphWindow(QtWidgets.QMainWindow):
         super().__init__(parent=parent)
         dm = DataModel()
         data = dm.df
+        self.data = data
         file_name = str(dm.filename)[:-3] + 'pdf'
         try:
             layout = QtWidgets.QVBoxLayout()
             pdf = PdfPages(file_name)
+            self.layout = layout
+            self.pdf = pdf
 
             table = Table(data, title='Общая таблица проблем')
-            pdf.savefig(table.fig)
-            layout.addWidget(table)
-
-            zgd_list = data['З.Г.Д.'].unique()
-            table_data = data[data['З.Г.Д.'] == zgd_list[0]]
-            table = Table(table=table_data, title=zgd_list[0])
             pdf.savefig(table.fig)
             layout.addWidget(table)
 
@@ -188,9 +187,11 @@ class GraphWindow(QtWidgets.QMainWindow):
             }
             pie_data.append(pie_dict)
 
-            chart = MultiPieCanvas(parent=parent, data=pie_data, title='Общий расклад')
+            chart = MultiPieCanvas(parent=parent, data=pie_data, title='Общие графики')
             layout.addWidget(chart)
             pdf.savefig(chart.fig)
+
+            self.create_personal_graphs()
 
             pdf.close()
 
@@ -204,3 +205,56 @@ class GraphWindow(QtWidgets.QMainWindow):
             self.setCentralWidget(scroll)
         except Exception as e:
             print(f'graph window __init__ {e}')
+
+    def create_personal_graphs(self):
+        data = self.data
+        zgd_list = data['З.Г.Д.'].unique()
+
+        for zgd in zgd_list:
+            table_data = data[data['З.Г.Д.'] == zgd]
+            table = Table(table=table_data, title=zgd)
+            self.pdf.savefig(table.fig)
+            self.layout.addWidget(table)
+            self.create_personal_charts(table_data, zgd)
+
+    def create_personal_charts(self, charts_data, title):
+        df = charts_data.iloc[:, 2].value_counts()
+        pie_data = []
+        pie_dict = {
+            'labels': df.index,
+            'sizes': list(df),
+            'title': 'Соотношение Внешних и Внутренних проблемм'
+        }
+        if len(pie_dict['sizes']) > 1:
+            pie_data.append(pie_dict)
+
+        df = charts_data.iloc[:, 3].value_counts()
+        pie_dict = {
+            'labels': df.index,
+            'sizes': list(df),
+            'title': 'Классификация проблемм'
+        }
+        if len(pie_dict['sizes']) > 1:
+            pie_data.append(pie_dict)
+
+        df = charts_data.iloc[:, 4].value_counts()
+        pie_dict = {
+            'labels': df.index,
+            'sizes': list(df),
+            'title': 'Бизнес процессы'
+        }
+        if len(pie_dict['sizes']) > 1:
+            pie_data.append(pie_dict)
+
+        df = charts_data.iloc[:, 5].value_counts()
+        pie_dict = {
+            'labels': df.index,
+            'sizes': list(df),
+            'title': 'Вид бизнес процессов'
+        }
+        if len(pie_dict['sizes']) > 1:
+            pie_data.append(pie_dict)
+
+        chart = MultiPieCanvas(parent=None, data=pie_data, title=title)
+        self.layout.addWidget(chart)
+        self.pdf.savefig(chart.fig)

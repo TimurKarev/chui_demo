@@ -52,17 +52,21 @@ class SVGParser:
                 for t in g:
                     if self.get_clear_tag(t.tag) == 'text':
                         txt_g.append(g)
-        index = ' '
-        try:
-            index = self.get_text_from_g(txt_g[0])
-        except:
-            pass
+        txts = []
+        index = ''
+        value = ''
+        for t in txt_g:
+            try:
+                txts.append(self.get_text_from_g(t).strip())
+            except:
+                pass
 
-        value = ' '
-        try:
-            value = self.get_text_from_g(txt_g[-1])
-        except:
-            pass
+        if len(txts) == 1:
+            value = txts[0]
+        elif len(txts) > 1:
+            index = min(txts)
+            value = max(txts)
+
         return index, value
 
     def parse_g(self, gs):
