@@ -43,9 +43,6 @@ class DataModel(object):
             df.insert(len(df.columns), self.headers[i], value='')
 
         self.df = df
-        # df[[self.headers[0]]] = df[[self.headers[0]]].apply(pd.to_numeric)
-        # df = df.sort_values(self.headers[0])
-        #
         self.sort_by_index()
 
 
@@ -69,6 +66,9 @@ class DataModel(object):
 
     def sort_by_index(self):
         df = self.df
-        df[[self.headers[0]]] = df[[self.headers[0]]].apply(pd.to_numeric)
-        df.sort_values(self.headers[0], kind='mergesort', inplace=True, ignore_index=True)
+        try:
+            df[[self.headers[0]]] = df[[self.headers[0]]].apply(pd.to_numeric)
+            df.sort_values(self.headers[0], kind='mergesort', inplace=True, ignore_index=True)
+        except Exception as e:
+            print(f'data model {e}')
         self.df = df

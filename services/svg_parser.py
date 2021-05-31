@@ -53,7 +53,7 @@ class SVGParser:
                     if self.get_clear_tag(t.tag) == 'text':
                         txt_g.append(g)
         txts = []
-        index = ''
+        index = '1.1'
         value = ''
         for t in txt_g:
             try:
